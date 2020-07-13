@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.MainActivity">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/get_friends"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="获取好友" />
+
+                <Button
+                    android:id="@+id/group_msg"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="群发列表" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/send_wx_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="发送到微信-文字" />
+
+            <Button
+                android:id="@+id/send_wx_pic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="发送到微信-图片" />
+
+            <Button
+                android:id="@+id/send_wxline_pic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="发送到朋友圈-文字图片" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/state_accessibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/dp12"
+            android:text="辅助功能未开启" />
+
+        <Button
+            android:id="@+id/open_accessibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/dp16"
+            android:text="打开" />
+
+    </LinearLayout>
+</LinearLayout>
