@@ -5,6 +5,7 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import cn.neetneet.library.kotlinextensions.isNull
 import com.blankj.utilcode.util.GsonUtils
+import com.blankj.utilcode.util.ToastUtils
 import com.yzyfdf.touchhelper.util.Constant
 import com.yzyfdf.touchhelper.util.FriendsUtil
 import com.yzyfdf.touchhelper.util.Task
@@ -168,6 +169,7 @@ class GetFriendsUtil(val detectionService: DetectionService) {
         detectionService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
         state = GetFState.End
         Constant.nowTask = Task.None
+        ToastUtils.showShort("请进入群发列表，勾选需要群发的联系人")
     }
 
 }

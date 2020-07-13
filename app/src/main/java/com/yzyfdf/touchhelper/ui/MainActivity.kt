@@ -11,7 +11,6 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.input.input
 import com.blankj.utilcode.util.ToastUtils
 import com.blankj.utilcode.util.UriUtils
-import com.google.android.material.dialog.MaterialDialogs
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureMimeType
 import com.yzyfdf.library.base.BaseActivity
@@ -20,13 +19,12 @@ import com.yzyfdf.library.base.BasePresenter
 import com.yzyfdf.library.sample.SampleRxSubscriber
 import com.yzyfdf.library.utils.showToast
 import com.yzyfdf.touchhelper.R
+import com.yzyfdf.touchhelper.accessibility.AccessibilityUtil
 import com.yzyfdf.touchhelper.kotlinextensions.PermissionType
 import com.yzyfdf.touchhelper.kotlinextensions.requestPermissions
-import com.yzyfdf.touchhelper.accessibility.AccessibilityUtil
 import com.yzyfdf.touchhelper.util.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
@@ -74,18 +72,24 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
     }
 
     override fun initView() {
-
-        get_friends.setOnClickListener { needAccessibility { getFriends() } }
+        get_friends.setOnClickListener {
+            needAccessibility {
+                notice(
+                    title = "提示",
+                    message = if (FriendsUtil.getFriends().isNullOrEmpty())
+                        "会打开你的微信，自动滑动通讯录列表，期间请不要进行任何操作！"
+                    else
+                        "重新获取好友列表会覆盖当前列表！"
+                ) { getFriends() }
+            }
+        }
         group_msg.setOnClickListener { startActivity(Intent(this, FriendsActivity::class.java)) }
 
         send_wx_text.setOnClickListener {
-            checkFriends {
-                LogUtil.addTask("消息群发")
-                editText { shareWechatFriend(it) }
-            }
+            needAccessibility { checkFriends { editText { shareWechatFriend(it) } } }
         }
         send_wx_pic.setOnClickListener { needAccessibility { needPermission { selectPic(code = selectPic4chat) } } }
-        send_wxline_pic.setOnClickListener { needPermission { selectPic(code = selectPic4timeline) } }
+        send_wxline_pic.setOnClickListener { needAccessibility { needPermission { selectPic(code = selectPic4timeline) } } }
 
         open_accessibility.setOnClickListener { AccessibilityUtil.goOpen(this) }
     }
@@ -114,13 +118,14 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
         Constant.nowList.clear()
         Constant.nowList.addAll(friends)
 
-        MaterialDialog(this).show {
-            title(text = "群发消息")
-            message(text = "${friends[0].name} 等${friends.size}人")
-            positiveButton {
-                function()
-            }
-        }
+        notice("群发消息", "${friends[0].name} 等${friends.size}人") { function() }
+//        MaterialDialog(this).show {
+//            title(text = "群发消息")
+//            message(text = "${friends[0].name} 等${friends.size}人")
+//            positiveButton {
+//                function()
+//            }
+//        }
     }
 
     /**
@@ -173,9 +178,12 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
     private fun editText(function: (str: String) -> Unit) {
         MaterialDialog(this).show {
             input(prefill = Constant.contentHint) { dialog, text ->
+                LogUtil.addTask("消息群发")
                 Constant.content = text.toString()
                 function(Constant.content)
             }
+            negativeButton(text = "取消")
+            positiveButton(text = "确认")
         }
     }
 
@@ -228,16 +236,33 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
                     }
                 }
             }
-            8 -> {//发送回调
-
-            }
         }
     }
 
+    /**
+     * 确认操作
+     */
+    private fun notice(title: String? = null, message: String? = null, function: () -> Unit) {
+        MaterialDialog(this).show {
+            title?.apply { title(text = this) }
+            message?.apply { message(text = this) }
+            positiveButton(text = "确认") {
+                function()
+            }
+            negativeButton(text = "取消")
+        }
+    }
+
+    /**
+     * 需要权限
+     */
     private fun needPermission(function: () -> Unit) {
         requestPermissions({ function() }, {}, PermissionType.EXTERNAL_STORAGE)
     }
 
+    /**
+     * 需要辅助功能
+     */
     private fun needAccessibility(function: () -> Unit) {
         val accessibility = AccessibilityUtil.isAccessibilitySettingsOn(this)
         if (accessibility) {
