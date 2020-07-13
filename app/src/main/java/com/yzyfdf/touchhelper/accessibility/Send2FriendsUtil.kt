@@ -169,6 +169,7 @@ class Send2FriendsUtil(val detectionService: DetectionService) {
 
     private fun complete() {
         Constant.nowTask = Task.None
+        Constant.content = ""
     }
 }
 

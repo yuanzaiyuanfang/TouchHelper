@@ -7,8 +7,11 @@ import android.net.Uri
 import android.os.Build
 import cn.neetneet.library.kotlinextensions.toGone
 import cn.neetneet.library.kotlinextensions.toVisible
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.input.input
 import com.blankj.utilcode.util.ToastUtils
 import com.blankj.utilcode.util.UriUtils
+import com.google.android.material.dialog.MaterialDialogs
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureMimeType
 import com.yzyfdf.library.base.BaseActivity
@@ -76,9 +79,9 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
         group_msg.setOnClickListener { startActivity(Intent(this, FriendsActivity::class.java)) }
 
         send_wx_text.setOnClickListener {
-            if (checkFriends()) {
+            checkFriends {
                 LogUtil.addTask("消息群发")
-                shareWechatFriend(Constant.content)
+                editText { shareWechatFriend(it) }
             }
         }
         send_wx_pic.setOnClickListener { needAccessibility { needPermission { selectPic(code = selectPic4chat) } } }
@@ -99,15 +102,25 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
         })
     }
 
-    private fun checkFriends(): Boolean {
+    /**
+     * 群发前检查
+     */
+    private fun checkFriends(function: () -> Unit) {
         val friends = FriendsUtil.getFriends().filter { it.selected }
         if (friends.isNullOrEmpty()) {
             showToast("群发列表为空")
-            return false
+            return
         }
         Constant.nowList.clear()
         Constant.nowList.addAll(friends)
-        return true
+
+        MaterialDialog(this).show {
+            title(text = "群发消息")
+            message(text = "${friends[0].name} 等${friends.size}人")
+            positiveButton {
+                function()
+            }
+        }
     }
 
     /**
@@ -152,6 +165,18 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         startActivityForResult(intent, send2timeline)
+    }
+
+    /**
+     * 编辑文本
+     */
+    private fun editText(function: (str: String) -> Unit) {
+        MaterialDialog(this).show {
+            input(prefill = Constant.contentHint) { dialog, text ->
+                Constant.content = text.toString()
+                function(Constant.content)
+            }
+        }
     }
 
     /**

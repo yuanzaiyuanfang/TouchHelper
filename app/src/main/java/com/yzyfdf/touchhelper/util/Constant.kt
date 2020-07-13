@@ -8,7 +8,8 @@ import com.yzyfdf.touchhelper.bean.Friend
  */
 object Constant {
 
-    val content = "%s，此消息测试，勿回。"
+    val contentHint = "%s，此消息测试，勿回。"
+    var content = ""
 
 
     val LauncherUI = "com.tencent.mm.ui.LauncherUI"//微信主界面
