@@ -1,6 +1,5 @@
 package com.yzyfdf.touchhelper.accessibility
 
-import android.accessibilityservice.AccessibilityService
 import android.os.Bundle
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -15,8 +14,7 @@ import com.yzyfdf.touchhelper.util.Task
  */
 class Send2FriendsUtil(val detectionService: DetectionService) {
 
-    var state: SendState =
-        SendState.None
+    var state: SendState = SendState.None
 
 
     fun onAccessibilityEvent(
@@ -25,24 +23,26 @@ class Send2FriendsUtil(val detectionService: DetectionService) {
     ) {
         when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
+//                println("className = ${className},state = ${state}")
                 when (className) {
-                    Constant.ChattingUI -> {
+                    Constant.ChattingUI -> {//发图片返回
                         if (state == SendState.Back || state == SendState.Send) {
-                            state = SendState.Back
-                            detectionService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+                            state = SendState.None
+                            Thread.sleep(1000)
+                            next()
+                            IntentUtil.setTopApp(BaseApplication.appContext)
                         }
                     }
-                    Constant.LauncherUI -> {
+                    Constant.LauncherUI -> {//发文字返回
                         if (state == SendState.Back) {
+                            state = SendState.None
                             if (Constant.nowList.isNullOrEmpty()) {
                                 complete()
                             } else {
                                 next()
                             }
-//                            detectionService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_HOME)
                             IntentUtil.setTopApp(BaseApplication.appContext)
                         }
-                        state = SendState.None
                     }
                     Constant.SelectConversationUI -> {
                         selectConversation()

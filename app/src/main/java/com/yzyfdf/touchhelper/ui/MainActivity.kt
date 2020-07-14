@@ -51,23 +51,27 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
                 LogUtil.complete()
                 return@on
             }
-            when (Constant.nowTask) {
-                Task.Send2FriendsText -> {
-                    Observable.timer(2000, TimeUnit.MILLISECONDS)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(object : SampleRxSubscriber<Long>(mRxManager) {
-                            override fun _onNext(t: Long) {
+
+            Observable.timer(2000, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(object : SampleRxSubscriber<Long>(mRxManager) {
+                    override fun _onNext(t: Long) {
+                        when (Constant.nowTask) {
+                            Task.Send2FriendsText -> {
                                 shareWechatFriend(Constant.content)
                             }
-
-                            override fun _onError(message: String) {
+                            Task.Send2FriendsPic -> {
+                                shareWechatFriend(UriUtils.uri2File(Uri.parse(Constant.picPath)))
                             }
-                        })
-                }
-                Task.Send2FriendsPic -> {
-                }
-            }
+                        }
+                    }
+
+                    override fun _onError(message: String) {
+                    }
+                })
+
+
         }
     }
 
@@ -86,9 +90,9 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
         group_msg.setOnClickListener { startActivity(Intent(this, FriendsActivity::class.java)) }
 
         send_wx_text.setOnClickListener {
-            needAccessibility { checkFriends { editText { shareWechatFriend(it) } } }
+            needAccessibility { checkFriends("群发消息") { editText { shareWechatFriend(it) } } }
         }
-        send_wx_pic.setOnClickListener { needAccessibility { needPermission { selectPic(code = selectPic4chat) } } }
+        send_wx_pic.setOnClickListener { /*needAccessibility {*/ needPermission { selectPic(code = selectPic4chat) } } /*}*/
         send_wxline_pic.setOnClickListener { needAccessibility { needPermission { selectPic(code = selectPic4timeline) } } }
 
         open_accessibility.setOnClickListener { AccessibilityUtil.goOpen(this) }
@@ -109,7 +113,7 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
     /**
      * 群发前检查
      */
-    private fun checkFriends(function: () -> Unit) {
+    private fun checkFriends(title: String, function: () -> Unit) {
         val friends = FriendsUtil.getFriends().filter { it.selected }
         if (friends.isNullOrEmpty()) {
             showToast("群发列表为空")
@@ -118,7 +122,7 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
         Constant.nowList.clear()
         Constant.nowList.addAll(friends)
 
-        notice("群发消息", "${friends[0].name} 等${friends.size}人") { function() }
+        notice(title, "${friends[0].name} 等${friends.size}人") { function() }
 //        MaterialDialog(this).show {
 //            title(text = "群发消息")
 //            message(text = "${friends[0].name} 等${friends.size}人")
@@ -223,9 +227,13 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
                             "file:${it.path}"
                         }
                     }
+                    Constant.picPath = path ?: ""
                     when (requestCode) {
                         selectPic4chat -> {
-                            shareWechatFriend(UriUtils.uri2File(Uri.parse(path)))
+                            checkFriends("群发图片") {
+                                LogUtil.addTask("图片群发")
+                                shareWechatFriend(UriUtils.uri2File(Uri.parse(Constant.picPath)))
+                            }
                         }
                         selectPic4timeline -> {
                             shareWechatTimeLine(
