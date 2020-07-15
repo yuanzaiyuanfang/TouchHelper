@@ -104,7 +104,7 @@ class GetFriendsUtil(val detectionService: DetectionService) {
             println("联系人 ${allList.size}：" + GsonUtils.toJson(allList))
             FriendsUtil.saveFriendsByName(allList)
 
-            state = GetFState.End
+            state = GetFState.None
             complete()
         }.start()
     }
@@ -167,7 +167,6 @@ class GetFriendsUtil(val detectionService: DetectionService) {
 
     private fun complete() {
         detectionService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
-        state = GetFState.End
         Constant.nowTask = Task.None
         ToastUtils.showShort("请进入群发列表，勾选需要群发的联系人")
     }
@@ -178,5 +177,4 @@ enum class GetFState {
     None,
     Contacts,
     Add,
-    End,
 }
