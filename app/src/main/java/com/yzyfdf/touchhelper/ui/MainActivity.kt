@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import androidx.core.widget.NestedScrollView
 import cn.neetneet.library.kotlinextensions.toGone
 import cn.neetneet.library.kotlinextensions.toVisible
 import com.afollestad.materialdialogs.MaterialDialog
@@ -47,8 +48,11 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
     override fun initPresenter() {
         mRxManager.on<String> {
             LogUtil.addContent("已发送 = ${it}")
+            refreshLog()
             if (Constant.nowList.isNullOrEmpty()) {
                 LogUtil.complete()
+                showToast("任务完成")
+                refreshLog()
                 return@on
             }
 
@@ -183,6 +187,7 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
         MaterialDialog(this).show {
             input(prefill = Constant.contentHint) { dialog, text ->
                 LogUtil.addTask("消息群发")
+                refreshLog()
                 Constant.content = text.toString()
                 function(Constant.content)
             }
@@ -232,6 +237,7 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
                         selectPic4chat -> {
                             checkFriends("群发图片") {
                                 LogUtil.addTask("图片群发")
+                                refreshLog()
                                 shareWechatFriend(UriUtils.uri2File(Uri.parse(Constant.picPath)))
                             }
                         }
@@ -280,5 +286,11 @@ class MainActivity : BaseActivity<BasePresenter<*, *>, BaseModel>() {
         }
     }
 
+
+    private fun refreshLog() {
+        val logs = LogUtil.getLogs()
+        tv_log.text = logs
+        layout_log.fullScroll(NestedScrollView.FOCUS_DOWN);
+    }
 
 }

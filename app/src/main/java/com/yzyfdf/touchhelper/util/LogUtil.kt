@@ -2,7 +2,6 @@ package com.yzyfdf.touchhelper.util
 
 import com.blankj.utilcode.constant.TimeConstants
 import com.blankj.utilcode.util.TimeUtils
-import java.util.concurrent.TimeUnit
 
 /**
  * Created by Administrator .
@@ -11,7 +10,7 @@ import java.util.concurrent.TimeUnit
 object LogUtil {
 
     val line = "=============================="
-    val sb: StringBuilder = StringBuilder()
+    private val sb: StringBuilder = StringBuilder()
     var count = 0
     var startTime = 0L
     var endTime = 0L
@@ -47,5 +46,9 @@ object LogUtil {
         val s = sb.toString()
         println(s)
 
+    }
+
+    fun getLogs(): String {
+        return sb.toString()
     }
 }

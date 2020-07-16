@@ -55,9 +55,30 @@
                 android:id="@+id/send_wxline_pic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="发送到朋友圈-文字图片" />
+                android:text="发送到朋友圈-文字图片"
+                android:visibility="gone" />
 
         </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/dp6"
+        android:text="日志" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/layout_log"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <TextView
+            android:id="@+id/tv_log"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </androidx.core.widget.NestedScrollView>
 

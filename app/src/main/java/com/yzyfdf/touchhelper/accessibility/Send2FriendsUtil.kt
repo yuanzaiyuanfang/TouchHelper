@@ -24,7 +24,7 @@ class Send2FriendsUtil(val detectionService: DetectionService) {
     ) {
         when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
-                println("className = ${className},state = ${state}")
+//                println("className = ${className},state = ${state}")
                 when (className) {
                     Constant.ChattingUI -> {//发图片返回
                         if (state == SendState.Back || state == SendState.Send) {
