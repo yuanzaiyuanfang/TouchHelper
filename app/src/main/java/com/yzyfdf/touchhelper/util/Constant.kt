@@ -15,8 +15,10 @@ object Constant {
     var picPath = ""//发送图片
 
 
+    val ShareImgUI = "com.tencent.mm.ui.tools.ShareImgUI"//分享页
     val LauncherUI = "com.tencent.mm.ui.LauncherUI"//微信主界面
     val SelectConversationUI = "com.tencent.mm.ui.transmit.SelectConversationUI"//选择联系人
+    val SelectConversationUI2 = "com.tencent.mm.ui.base.p"//选择联系人
     val SoftInputWindow = "android.inputmethodservice.SoftInputWindow"//输入法
     val SendAppMessageWrapperUI = "com.tencent.mm.ui.transmit.SendAppMessageWrapperUI"//发送弹窗——文字
     val SendAppMessageWrapperUI2 = "com.tencent.mm.ui.widget.a.d"//发送弹窗——图

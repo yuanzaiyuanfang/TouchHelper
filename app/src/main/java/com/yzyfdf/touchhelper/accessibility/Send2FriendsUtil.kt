@@ -1,5 +1,6 @@
 package com.yzyfdf.touchhelper.accessibility
 
+import android.accessibilityservice.AccessibilityService
 import android.os.Bundle
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -23,7 +24,7 @@ class Send2FriendsUtil(val detectionService: DetectionService) {
     ) {
         when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
-//                println("className = ${className},state = ${state}")
+                println("className = ${className},state = ${state}")
                 when (className) {
                     Constant.ChattingUI -> {//发图片返回
                         if (state == SendState.Back || state == SendState.Send) {
@@ -44,8 +45,16 @@ class Send2FriendsUtil(val detectionService: DetectionService) {
                             IntentUtil.setTopApp(BaseApplication.appContext)
                         }
                     }
-                    Constant.SelectConversationUI -> {
-                        selectConversation()
+                    Constant.ShareImgUI -> {
+                        state = SendState.None
+                    }
+                    Constant.SelectConversationUI, Constant.SelectConversationUI2 -> {
+                        if (state == SendState.None) {
+                            selectConversation()
+                        }
+                        if (state == SendState.Back) {
+                            detectionService.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+                        }
                     }
                     Constant.SoftInputWindow -> {
                         if (state == SendState.ClickSearch) {
